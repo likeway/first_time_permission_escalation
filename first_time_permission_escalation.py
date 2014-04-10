@@ -11,7 +11,7 @@ def main():
 	ifile = 'dir_list.txt'
 	ofile = 'result_' + datetime.datetime.now().strftime("%Y%m%d_%H%M") + '.csv'
 	local_path = ''
-	url_path = 'http://test.com/'
+	url_path = ''
 	exclude_file_type='jpg|JPG|gif|GIF|png|PNG|bmp|BMP|tif|TIF|js|css'
 	lines=''
 	test_mode = False
@@ -29,7 +29,7 @@ def main():
 			print '    -t, --test_mode, default test '+str(test_mode_limit)+' requests'
 			print '    -s, --skip_mode, default is disbaled,'
 			print '    -r, --local_path, example C:\dir\\ or /var/web/ ,default ' + local_path
-			print '    -R, --url_path, default is ' +url_path
+			print '    -R, --url_path, default is ' + url_path
 			print '    -x, --exclude_file_type, default is '+exclude_file_type
 			print '    -i, --ifile, default is '+ifile
 			print '    -o, --ofile, default is '+ofile
@@ -57,8 +57,9 @@ def main():
 	print 'url_path is ' + url_path
 	if url_path.find('https') >= 0:
 		exclude_file_type = '^[https].*(' + exclude_file_type + ')$'
-	else:
+	elif url_path.find('http') >= 0:
 		exclude_file_type = '^[http].*(' + exclude_file_type + ')$'
+	
 	print 'exclude file types is ' + exclude_file_type
 	print 'ifile is ' + ifile
 	print 'ofile is ' + ofile
@@ -69,7 +70,7 @@ def main():
 	else :
 		print 'test mode is disabled'
 	if skip_mode:
-		print 'skip_mode is enabled'
+		print 'skip_mode is enabled, only replace url and not send requests.'
 	else :
 		print 'skip_mode is disabled'
 	print '********************************************************************************'	
@@ -83,12 +84,14 @@ def main():
 			url = line_cell[0]
 		else :
 			url = line
-		# replace local file path to url path
-		url = url.replace(local_path, url_path)
-		# replace windows local file path \ to  /
-		url = url.replace('\\','/')
-		# remove newline /n
-		url = url.rstrip('\n')
+		
+		if not local_path == '':
+			# replace local file path to url path
+			url = url.replace(local_path, url_path)
+			# replace windows local file path \ to  /
+			url = url.replace('\\','/')
+			# remove newline /n
+			url = url.rstrip('\n')
 		
 		# exclude not important file types
 		if not re.search(exclude_file_type, url):
@@ -101,7 +104,7 @@ def main():
 				break
 			else:
 				print str(i) + '\r',
-			i = i + 1
+			i += 1
 			
 			line_http_body_hash=''
 			line_http_body_hash_2=''
@@ -151,9 +154,9 @@ def main():
 			if i==1:
 				lines = lines + 'URL, Hash_1, Response_Length_1, Response_Code_1'
 				if not cookie_str == '':
-					lines = lines + ', Hash_2, Response_Length_2, Response_Code_2, Hash_Comparison \n'
+					lines = lines + ', Hash_2, Response_Length_2, Response_Code_2, Hash_Comparison'
 			#print data row
-			lines = lines + url 			
+			lines = lines + '\n' + url 			
 			lines = lines + ',' + line_http_body_hash 
 			lines = lines + ',' + str(line_http_body_lengh)
 			lines = lines + ',' + str(line_http_code).rstrip('\n')
@@ -162,8 +165,6 @@ def main():
 				lines = lines + ',' + str(line_http_body_lengh_2)
 				lines = lines + ',' + str(line_http_code_2).rstrip('\n')
 				lines = lines + ',' + compare_result
-			#print new line
-			lines = lines + '\n'
 	fr.close()
 
 	# write result to csv file
