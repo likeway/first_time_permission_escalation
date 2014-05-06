@@ -12,13 +12,13 @@ def main():
 	ofile = 'result_' + datetime.datetime.now().strftime("%Y%m%d_%H%M") + '.csv'
 	local_path = ''
 	url_path = ''
-	exclude_file_type='jpg|JPG|gif|GIF|png|PNG|bmp|BMP|tif|TIF|js|css'
+	exclude_file_type='jpg|JPG|gif|GIF|png|PNG|bmp|BMP|tif|TIF|css'
 	lines=''
 	test_mode = False
 	skip_mode =False
 	test_mode_limit = 10
 	cookie_str = ''
-	
+
 	for opt, arg in opts:
 		if opt in ('-h', '--help'):
 			print '********************************************************************************'
@@ -39,7 +39,7 @@ def main():
 		elif opt in ('-t', '--test_mode'):
 			test_mode = True
 		elif opt in ('-s', '--skip_mode'):
-			skip_mode =True
+			skip_mode = True
 		elif opt in ('-r', '--local_path'):
 			local_path = arg
 		elif opt in ('-R', '--url_path'):
@@ -52,6 +52,22 @@ def main():
 			ofile = arg
 		elif opt in ('-c', '--cookie_str'):
 			cookie_str = arg
+		else:
+			print '********************************************************************************'
+			print 'created by likeway, 2014.'
+			print 'usage:'
+			print '  first_time_permission_escalation.py [-htrRxioc]'
+			print '    -h, --help, read me and help you'
+			print '    -t, --test_mode, default test '+str(test_mode_limit)+' requests'
+			print '    -s, --skip_mode, default is disbaled,'
+			print '    -r, --local_path, example C:\dir\\ or /var/web/ ,default ' + local_path
+			print '    -R, --url_path, default is ' + url_path
+			print '    -x, --exclude_file_type, default is '+exclude_file_type
+			print '    -i, --ifile, default is '+ifile
+			print '    -o, --ofile, default is '+ofile
+			print '    -c, --cookie_str, example "something=abc;anthoer=123", default is '+cookie_str
+			print '********************************************************************************'
+			sys.exit()
 	print '********************************************************************************'
 	print 'local_path is ' + local_path 
 	print 'url_path is ' + url_path
@@ -59,7 +75,7 @@ def main():
 		exclude_file_type = '^[https].*(' + exclude_file_type + ')$'
 	elif url_path.find('http') >= 0:
 		exclude_file_type = '^[http].*(' + exclude_file_type + ')$'
-	
+
 	print 'exclude file types is ' + exclude_file_type
 	print 'ifile is ' + ifile
 	print 'ofile is ' + ofile
@@ -77,6 +93,9 @@ def main():
 	# read input cht soc file list
 	fr = open(ifile,'r')
 	i = 0
+	extstr=''
+	extstr_tmp=''
+	extstr_all=''
 	for line in fr.readlines():
 		# if ifile is a csv file, only get the first cell of every line
 		line_cell = line.split(',')
@@ -84,7 +103,7 @@ def main():
 			url = line_cell[0]
 		else :
 			url = line
-		
+
 		if not local_path == '':
 			# replace local file path to url path
 			url = url.replace(local_path, url_path)
@@ -93,11 +112,16 @@ def main():
 			# remove newline /n
 			url = url.rstrip('\n')
 		
-		# exclude not important file types
-		if not re.search(exclude_file_type, url):
+		# exclude not important file types		
+		if not re.search(exclude_file_type, url) >= 0:
+			extstr = re.search('\.\w{1,6}$', url)
+			if extstr:
+				extstr_tmp = extstr.group()
+			else:
+				extstr_tmp = ''
 			# if skip_mode is enabled, jump to next for loop
 			if skip_mode:
-				lines = lines + url +'\n'
+				lines = lines + url + ',' + extstr_tmp + '\n'
 				continue
 			# if test mode is enabled, process only 50 request 
 			if test_mode and i >= test_mode_limit:
@@ -105,7 +129,6 @@ def main():
 			else:
 				print str(i) + '\r',
 			i += 1
-			
 			line_http_body_hash=''
 			line_http_body_hash_2=''
 			line_http_body_lengh=0
@@ -152,11 +175,12 @@ def main():
 					compare_result = 'same'	
 			#print column name 
 			if i==1:
-				lines = lines + 'URL, Hash_1, Response_Length_1, Response_Code_1'
+				lines = 'URL, Ext, Hash_1, Response_Length_1, Response_Code_1 \n'
 				if not cookie_str == '':
-					lines = lines + ', Hash_2, Response_Length_2, Response_Code_2, Hash_Comparison'
+					lines = 'URL, Ext, Hash_1, Response_Length_1, Response_Code_1, Hash_2, Response_Length_2, Response_Code_2, Hash_Comparison \n'
 			#print data row
-			lines = lines + '\n' + url 			
+			lines = lines + url.rstrip('\n')
+			lines = lines + ',' + extstr_tmp
 			lines = lines + ',' + line_http_body_hash 
 			lines = lines + ',' + str(line_http_body_lengh)
 			lines = lines + ',' + str(line_http_code).rstrip('\n')
@@ -165,17 +189,17 @@ def main():
 				lines = lines + ',' + str(line_http_body_lengh_2)
 				lines = lines + ',' + str(line_http_code_2).rstrip('\n')
 				lines = lines + ',' + compare_result
+			
+			lines = lines + '\n'
 	fr.close()
-
 	# write result to csv file
 	fw = open(ofile, "w")
 	fw.write(lines)
 	fw.close()
-	
+
 	print str(i) + ' http requests has been sended.'
 	print 'The ouput file is "' + ofile + '".'
 	print '********************************************************************************'
-	
+
 if __name__ == '__main__':
    main()
-
