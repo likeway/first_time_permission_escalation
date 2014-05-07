@@ -10,8 +10,8 @@ def main():
 
 	ifile = 'dir_list.txt'
 	ofile = 'result_' + datetime.datetime.now().strftime("%Y%m%d_%H%M") + '.csv'
-	local_path = ''
-	url_path = ''
+	local_path = '/var/web/'
+	url_path = 'http://test.com/'
 	exclude_file_type='jpg|JPG|gif|GIF|png|PNG|bmp|BMP|tif|TIF|css'
 	lines=''
 	test_mode = False
@@ -29,7 +29,7 @@ def main():
 			print '    -t, --test_mode, default test '+str(test_mode_limit)+' requests'
 			print '    -s, --skip_mode, default is disbaled,'
 			print '    -r, --local_path, example C:\dir\\ or /var/web/ ,default ' + local_path
-			print '    -R, --url_path, default is ' + url_path
+			print '    -R, --url_path, example http://test.com/ ,default is ' + url_path
 			print '    -x, --exclude_file_type, default is '+exclude_file_type
 			print '    -i, --ifile, default is '+ifile
 			print '    -o, --ofile, default is '+ofile
@@ -52,22 +52,7 @@ def main():
 			ofile = arg
 		elif opt in ('-c', '--cookie_str'):
 			cookie_str = arg
-		else:
-			print '********************************************************************************'
-			print 'created by likeway, 2014.'
-			print 'usage:'
-			print '  first_time_permission_escalation.py [-htrRxioc]'
-			print '    -h, --help, read me and help you'
-			print '    -t, --test_mode, default test '+str(test_mode_limit)+' requests'
-			print '    -s, --skip_mode, default is disbaled,'
-			print '    -r, --local_path, example C:\dir\\ or /var/web/ ,default ' + local_path
-			print '    -R, --url_path, default is ' + url_path
-			print '    -x, --exclude_file_type, default is '+exclude_file_type
-			print '    -i, --ifile, default is '+ifile
-			print '    -o, --ofile, default is '+ofile
-			print '    -c, --cookie_str, example "something=abc;anthoer=123", default is '+cookie_str
-			print '********************************************************************************'
-			sys.exit()
+			
 	print '********************************************************************************'
 	print 'local_path is ' + local_path 
 	print 'url_path is ' + url_path
@@ -114,7 +99,7 @@ def main():
 		
 		# exclude not important file types		
 		if not re.search(exclude_file_type, url) >= 0:
-			extstr = re.search('\.\w{1,6}$', url)
+			extstr = re.search('\.\w{1,15}$', url)
 			if extstr:
 				extstr_tmp = extstr.group()
 			else:
