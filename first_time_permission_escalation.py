@@ -17,7 +17,7 @@ def main():
 	test_mode = False
 	skip_mode =False
 	test_mode_limit = 10
-	cookie_str = ''
+	cookie_str = ' '
 
 	for opt, arg in opts:
 		if opt in ('-h', '--help'):
