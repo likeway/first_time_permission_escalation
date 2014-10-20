@@ -3,59 +3,52 @@ import sys, getopt, re, os, urllib2, hashlib, datetime
 
 def main():	
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],'htsr:R:x:i:o:c:', ['test_mode','skip_mode','local_path=','url_path=','exclude_file_type=','ifile=','ofile=','cookie_str='])
+		opts, args = getopt.getopt(sys.argv[1:],'tsr:R:x:c:', ['test_mode','skip_mode','local_path=','url_path=','exclude_file_type=','cookie_str='])
 	except getopt.GetoptError as err:
 		print err
 		sys.exit(2)
 
 	ifile = 'dir_list.txt'
 	ofile = 'result_' + datetime.datetime.now().strftime("%Y%m%d_%H%M") + '.csv'
-	local_path = '/var/web/'
-	url_path = 'http://test.com/'
+	local_path = ''
+	url_path = ''
 	exclude_file_type='jpg|JPG|gif|GIF|png|PNG|bmp|BMP|tif|TIF|css'
 	lines=''
 	test_mode = False
 	skip_mode =False
-	test_mode_limit = 10
+	test_mode_limit = 100
 	cookie_str = ' '
 
 	for opt, arg in opts:
-		if opt in ('-h', '--help'):
-			print '********************************************************************************'
-			print 'created by likeway, 2014.'
-			print 'usage:'
-			print '  first_time_permission_escalation.py [-htrRxioc]'
-			print '    -h, --help, read me and help you'
-			print '    -t, --test_mode, default test '+str(test_mode_limit)+' requests'
-			print '    -s, --skip_mode, default is disbaled,'
-			print '    -r, --local_path, example C:\dir\\ or /var/web/ ,default ' + local_path
-			print '    -R, --url_path, example http://test.com/ ,default is ' + url_path
-			print '    -x, --exclude_file_type, default is '+exclude_file_type
-			print '    -i, --ifile, default is '+ifile
-			print '    -o, --ofile, default is '+ofile
-			print '    -c, --cookie_str, example "something=abc;anthoer=123", default is '+cookie_str
-			print '********************************************************************************'
-			sys.exit()
-		elif opt in ('-t', '--test_mode'):
+		if opt in ('-t', '--test_mode'):
 			test_mode = True
 		elif opt in ('-s', '--skip_mode'):
 			skip_mode = True
-		elif opt in ('-r', '--local_path'):
+		elif opt in ('-r', '--localpath_to_be_repalced'):
 			local_path = arg
-		elif opt in ('-R', '--url_path'):
+		elif opt in ('-R', '--url_to_browse'):
 			url_path = arg
 		elif opt in ('-x', '--exclude_file_type'):
 			exclude_file_type = arg
-		elif opt in ('-i', '--ifile'):
-			ifile = arg
-		elif opt in ('-o', '--ofile'):
-			ofile = arg
 		elif opt in ('-c', '--cookie_str'):
 			cookie_str = arg
+		else:
+			print '********************************************************************************'
+			print 'created by likeway, 2014.'
+			print 'usage:'
+			print 'input file must be dir_list.txt, and output file is '+ofile
+			print '  first_time_permission_escalation.py [-htrRxioc]'
+			print '    -t, --test_mode, default test '+str(test_mode_limit)+' requests'
+			print '    -s, --skip_mode, default is disbaled,'
+			print '    -r, --localpath_to_be_repalced, example C:\dir\\ or /var/web/ ,default ' + local_path
+			print '    -R, --url_to_browse, example http://test.com/ ,default is ' + url_path
+			print '    -x, --exclude_file_type, default is '+exclude_file_type
+			print '    -c, --cookie_str, example "something=abc;anthoer=123", default is '+cookie_str
+			print '********************************************************************************'
+			sys.exit()
 			
 	print '********************************************************************************'
-	print 'local_path is ' + local_path 
-	print 'url_path is ' + url_path
+
 	if url_path.find('https') >= 0:
 		exclude_file_type = '^[https].*(' + exclude_file_type + ')$'
 	elif url_path.find('http') >= 0:
