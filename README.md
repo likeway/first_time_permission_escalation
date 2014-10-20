@@ -22,7 +22,7 @@ first_time_permission_escalation
     
     -x, --exclude_file_type, default is jpg|JPG|gif|GIF|png|PNG|bmp|BMP|tif|TIF|js|css
     
-    -i, --ifile, default is dir_list.txt
+    -i, --ifile, default is dir_list.txt 預設只抓dir_list.txt
     
     -o, --ofile, default is result_20140101_1200.csv
     
@@ -33,23 +33,19 @@ first_time_permission_escalation
 
 1. 輸入 dir_list.txt 過濾不要的附檔名，並且將格式轉為http/https，不測試連線直接輸出網址清單
 
-    python first_time_permission_escalation.py -i "dir_list.txt" -x "jpg|GIF" -r "/var/" -R "http://google.com" -s
+    python first_time_permission_escalation.py -x "jpg|GIF" -r "/var/" -R "http://google.com" -s
 
 
 2. 輸入 dir_list.txt 過濾不要的附檔名，並且將格式轉為http/https，並測試前10個網址的連線狀況
     
-    python first_time_permission_escalation.py -i "dir_list.txt" -x "jpg|GIF" -r "/var/" -R "http://google.com" -t
+    python first_time_permission_escalation.py -x "jpg|GIF" -r "/var/" -R "http://google.com" -t
 
 
 3. 輸入 dir_list.txt 過濾不要的附檔名，並且將格式轉為http/https，並測試全部網址的連線狀況
     
-    python first_time_permission_escalation.py -i "dir_list.txt" -x "jpg|GIF" -r "/var/" -R "http://google.com"
+    python first_time_permission_escalation.py -x "jpg|GIF" -r "/var/" -R "http://google.com"
 
 
 4. 輸入 dir_list.txt 過濾不要的附檔名，並且將格式轉為http/https，並比較有設定cookie和沒有設定cookie連線狀況
     
-    python first_time_permission_escalation.py -i "dir_list.txt" -x "jpg|GIF" -r "/var/" -R "http://google.com" -c "jsessionid=test"
-
-
-    
-    
+    python first_time_permission_escalation.py -x "jpg|GIF" -r "/var/" -R "http://google.com" -c "jsessionid=test"
